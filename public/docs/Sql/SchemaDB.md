@@ -1,6 +1,3 @@
---
--- Table: societes
---
 CREATE TABLE societes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     nom TEXT NOT NULL,
@@ -14,10 +11,7 @@ CREATE TABLE societes (
     longitude DECIMAL(9,6),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
---
 
--- Table: clients
---
 CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     nom TEXT NOT NULL,
@@ -27,10 +21,7 @@ CREATE TABLE clients (
     mot_de_passe_hash TEXT,         -- Pour les comptes persistants (Livraison)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
---
 
--- Table: adresses_clients
---
 CREATE TABLE adresses_clients (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
@@ -42,8 +33,6 @@ CREATE TABLE adresses_clients (
 );
 --
 
--- Table: utilisateurs
---
 CREATE TABLE utilisateurs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -53,20 +42,14 @@ CREATE TABLE utilisateurs (
     est_actif BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
---
 
--- Table: categories
---
 CREATE TABLE categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
     nom TEXT NOT NULL,
     ordre_affichage INTEGER DEFAULT 0
 );
---
 
--- Table: produits
---
 CREATE TABLE produits (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -75,19 +58,13 @@ CREATE TABLE produits (
     prix_unitaire NUMERIC(10, 2) NOT NULL,
     est_disponible BOOLEAN DEFAULT TRUE
 );
---
 
--- Table: zones
---
 CREATE TABLE zones (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
     nom TEXT NOT NULL
 );
---
 
--- Table: livreurs
---
 CREATE TABLE livreurs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -96,10 +73,7 @@ CREATE TABLE livreurs (
     zone_id UUID REFERENCES zones(id) ON DELETE SET NULL,
     est_disponible BOOLEAN DEFAULT TRUE
 );
---
 
--- Table: tables
---
 CREATE TABLE tables (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -108,10 +82,7 @@ CREATE TABLE tables (
     statut status_table DEFAULT 'libre',
     UNIQUE (societe_id, zone_id, numero_table)
 );
---
 
--- Table: commandes
---
 CREATE TABLE commandes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -127,10 +98,7 @@ CREATE TABLE commandes (
     montant_total NUMERIC(10, 2) DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
---
 
--- Table: commande_items
---
 CREATE TABLE commande_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     commande_id UUID NOT NULL REFERENCES commandes(id) ON DELETE CASCADE,
@@ -143,10 +111,7 @@ CREATE TABLE commande_items (
     est_complement BOOLEAN DEFAULT FALSE, -- Tag "Ajout successif"
     statut_item TEXT DEFAULT 'en_attente'
 );
---
 
--- Table: expeditions
---
 CREATE TABLE expeditions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     commande_id UUID UNIQUE NOT NULL REFERENCES commandes(id) ON DELETE CASCADE,
@@ -155,10 +120,7 @@ CREATE TABLE expeditions (
     code_otp_validation TEXT,     -- Code à donner au livreur pour confirmer la remise
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
---
 
--- Table: demandes_service
---
 CREATE TABLE demandes_service (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -166,10 +128,7 @@ CREATE TABLE demandes_service (
     type_demande type_demande_service NOT NULL,
     statut TEXT DEFAULT 'en_attente'
 );
---
 
--- Table: paiements
---
 CREATE TABLE paiements (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     societe_id UUID NOT NULL REFERENCES societes(id) ON DELETE CASCADE,
@@ -179,6 +138,3 @@ CREATE TABLE paiements (
     transaction_ref TEXT,        -- ID MoMo / Flooz
     statut_paiement TEXT DEFAULT 'valide'
 );
---
--- Fin du schéma
---
